@@ -20,7 +20,7 @@ def generate_launch_description():
         respawn=True,
         respawn_delay=5,
         remappings=[
-            ('odometry/filtered', 'measurement/odom'),
+            ('odometry/filtered', 'measurement/odom/enu'),
         ]
     )
 
@@ -36,6 +36,14 @@ def generate_launch_description():
     )
     ld.add_action(ned_world_include)
 
+    ned_world_include = launch.actions.IncludeLaunchDescription(
+        launch.launch_description_sources.PythonLaunchDescriptionSource(
+            launch.substitutions.PathJoinSubstitution(
+                [observer_pkg_dir, 'launch', 'enu_to_ned_odom.launch.py']
+            )
+        ),
+    )
+    ld.add_action(ned_world_include)
 
     for arg in ARGUMENTS:
         ld.add_action(arg)

@@ -8,19 +8,26 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 
 from cybership_utilities.launch import anon
-
+from cybership_utilities.launch import COMMON_ARGUMENTS as ARGUMENTS
 
 def generate_launch_description():
-    return LaunchDescription([
+
+    ld =  LaunchDescription([
         DeclareLaunchArgument('frame_id', default_value='world_ned'),
         Node(
+            namespace=LaunchConfiguration('vessel_name'),
             package='cybership_observer',
             executable='enu_to_ned_odom.py',
             name=f'enu_to_ned_odom_transform_{anon()}',
             remappings=[
-                ('in_odom',  '/voyager/measurement/odom'),
-                ('out_odom', '/voyager/measurement/odom/ned')
+                ('in_odom',  'measurement/odom/enu'),
+                ('out_odom', 'measurement/odom')
             ],
             parameters=[{'frame_id': LaunchConfiguration('frame_id')}]
         )
     ])
+
+    for arg in ARGUMENTS:
+        ld.add_action(arg)
+
+    return ld
